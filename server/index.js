@@ -11,7 +11,7 @@ const PORT= process.env.PORT || 5000
 
 app.use(cors())
 app.use(expres.json())
-app.use('api/tasks', taskRoutes)
+app.use('/api/tasks', taskRoutes)
 
 app.listen(PORT, () => {
     connectDB()

@@ -1,8 +1,11 @@
-import React from 'react'
+
+import TaskList from './components/TaskList'
 
 function App() {
   return (
-    <div>App</div>
+    <>
+    <TaskList/>
+    </>
   )
 }
 

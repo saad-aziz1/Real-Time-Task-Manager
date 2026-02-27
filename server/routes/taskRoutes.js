@@ -6,7 +6,7 @@ const router = expres.Router()
 
 router.post('/add', createTask)
 router.get('/all', getTasks)
-router.put("/:id", updateTask)
-router.delete("/:id", deleteTask)
+router.put("/update/:id", updateTask)
+router.delete("/delete/:id", deleteTask)
 
 export default router

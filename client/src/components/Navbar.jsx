@@ -6,7 +6,7 @@ const Navbar = () => {
     <nav className="bg-[#FEFFF2] border-b border-[#94A3B8]/20 sticky top-0 z-50">
       <div className="max-w-4xl mx-auto px-2 md:px-4 h-16 flex items-center justify-between gap-1">
         
-        {/* ProjectName*/}
+        {/* ProjectName*/}  
         <Link to="/" className="flex items-center gap-1.5 text-[#0F172A] font-bold text-base md:text-xl shrink-0">
           <div className="bg-[#0F172A] p-1 md:p-1.5 rounded-lg">
             <LayoutGrid size={16} className="text-[#F59E0B] md:w-5 md:h-5" />

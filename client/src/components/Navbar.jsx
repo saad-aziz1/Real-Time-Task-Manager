@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LayoutGrid, PlusCircle, Search, Menu, X, LogIn, UserPlus, SearchX } from 'lucide-react';
+import { LayoutGrid, PlusCircle, Search, Menu, X, LogIn, UserPlus, SearchX, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = ({ onSearch }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const { user, logout } = useAuth();
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
@@ -63,12 +65,28 @@ const Navbar = ({ onSearch }) => {
 
           {/* DesktopOnly */}
           <div className="hidden lg:flex items-center gap-3 border-l border-[#94A3B8]/30 ml-2 pl-4">
-            <Link to="/login" className="text-[#0F172A] font-bold text-sm flex items-center gap-1">
-              <LogIn size={16} /> Login
-            </Link>
-            <Link to="/signup" className="bg-[#0F172A] text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-[#1E293B]">
-              Sign Up
-            </Link>
+            {user ? (
+              <>
+                <span className="text-[#0F172A] font-bold text-sm">
+                  Hello, {user.name}
+                </span>
+                <button 
+                  onClick={logout}
+                  className="flex items-center gap-1 text-[#EF4444] font-bold text-sm hover:bg-[#EF4444]/5 px-3 py-2 rounded-xl transition-all"
+                >
+                  <LogOut size={16} /> Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="text-[#0F172A] font-bold text-sm flex items-center gap-1">
+                  <LogIn size={16} /> Login
+                </Link>
+                <Link to="/signup" className="bg-[#0F172A] text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-[#1E293B]">
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
 
           {/* ToggleIcon */}
@@ -110,22 +128,36 @@ const Navbar = ({ onSearch }) => {
       {isMenuOpen && (
         <div className="lg:hidden bg-[#FEFFF2] border-t border-[#94A3B8]/10 absolute w-full left-0 shadow-2xl p-5 animate-in slide-in-from-top duration-300 z-40">
           <div className="flex flex-col gap-4">
-            <p className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest px-1">Account Actions</p>
-            <Link 
-              to="/login" 
-              onClick={() => setIsMenuOpen(false)}
-              className="flex items-center justify-between px-4 py-3 border border-[#0F172A]/10 rounded-xl font-bold text-[#0F172A] bg-white/50"
-            >
-              <span className="flex items-center gap-2"><LogIn size={18} /> Login</span>
-              <div className="w-2 h-2 rounded-full bg-[#F59E0B]"></div>
-            </Link>
-            <Link 
-              to="/signup" 
-              onClick={() => setIsMenuOpen(false)}
-              className="flex items-center justify-center gap-2 py-3 bg-[#0F172A] text-white rounded-xl font-bold shadow-lg shadow-[#0F172A]/20"
-            >
-              <UserPlus size={18} /> Create Account
-            </Link>
+            {user ? (
+              <>
+                <p className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest px-1">Hello, {user.name}</p>
+                <button 
+                  onClick={() => { logout(); setIsMenuOpen(false); }}
+                  className="flex items-center justify-center gap-2 py-3 bg-[#EF4444] text-white rounded-xl font-bold shadow-lg shadow-[#EF4444]/20"
+                >
+                  <LogOut size={18} /> Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest px-1">Account Actions</p>
+                <Link 
+                  to="/login" 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center justify-between px-4 py-3 border border-[#0F172A]/10 rounded-xl font-bold text-[#0F172A] bg-white/50"
+                >
+                  <span className="flex items-center gap-2"><LogIn size={18} /> Login</span>
+                  <div className="w-2 h-2 rounded-full bg-[#F59E0B]"></div>
+                </Link>
+                <Link 
+                  to="/signup" 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 py-3 bg-[#0F172A] text-white rounded-xl font-bold shadow-lg shadow-[#0F172A]/20"
+                >
+                  <UserPlus size={18} /> Create Account
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

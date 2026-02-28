@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 
 const signToken = (id) => {
-  return jwt.sign({ id }, "MY_SECRET_KEY_123", {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '30d' 
   });
 };

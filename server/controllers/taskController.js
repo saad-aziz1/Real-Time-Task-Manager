@@ -2,8 +2,15 @@ import Task from '../config/models/task.js'
 
 export const createTask = async (req,res) => {
     try {
+      
     const {title, description, priority} = req.body
-    const newTask = new Task({title, description, priority}) 
+   
+    const newTask = new Task({
+        title, 
+        description, 
+        priority, 
+        user: req.user._id 
+    }) 
     const savedTask = await newTask.save()
     res.status(201).json(savedTask)
     
@@ -16,7 +23,8 @@ export const createTask = async (req,res) => {
 
 export const getTasks = async (req, res) => {
   try {
-    const tasks = await Task.find().sort({ createdAt: -1 });
+    
+    const tasks = await Task.find({ user: req.user._id }).sort({ createdAt: -1 });
     res.status(200).json(tasks);
   } catch (error) {
     res.status(500).json({ 
@@ -33,10 +41,11 @@ export const searchTasks = async (req, res) => {
       return res.status(400).json({ message: "Search query is required" });
     }
 
-    
     const searchRegex = new RegExp(query, 'i');
 
+   
     const tasks = await Task.find({
+      user: req.user._id,
       $or: [
         { title: { $regex: searchRegex } },
         { description: { $regex: searchRegex } }
@@ -57,10 +66,15 @@ export const searchTasks = async (req, res) => {
 export const updateTask = async (req, res) => {
   try {
     const { id } = req.params; 
-    const updatedTask = await Task.findByIdAndUpdate(id, req.body, { new: true })
+    
+    const updatedTask = await Task.findOneAndUpdate(
+        { _id: id, user: req.user._id }, 
+        req.body, 
+        { new: true }
+    )
     
     if (!updatedTask) return res.status(404).json({ 
-      message: "Task not found" })
+      message: "Task not found or unauthorized" })
     
     res.status(200).json(updatedTask);
   
@@ -75,10 +89,11 @@ export const updateTask = async (req, res) => {
 export const deleteTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedTask = await Task.findByIdAndDelete(id)
+    
+    const deletedTask = await Task.findOneAndDelete({ _id: id, user: req.user._id })
     
     if (!deletedTask) return res.status(404).json({ 
-      message: "Task not found" })
+      message: "Task not found or unauthorized" })
     
     res.status(200).json({ 
       message: "Task deleted successfully" })

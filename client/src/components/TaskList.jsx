@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { CheckCircle2, Clock, Trash2, Tag, LayoutGrid, Edit3, X } from 'lucide-react';
+import { CheckCircle2, Clock, Trash2, Tag, LayoutGrid, Edit3, X, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
+  const [expandedTasks, setExpandedTasks] = useState({});
+
+  // Pagination States
+  const [currentPage, setCurrentPage] = useState(1);
+  const tasksPerPage = 6;
 
   const fetchTasks = async () => {
     try {
@@ -17,11 +22,17 @@ const TaskList = () => {
     }
   };
 
+  const toggleDescription = (id) => {
+    setExpandedTasks(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
+
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:10000/api/tasks/delete/${id}`);
       fetchTasks();
-      // Delete
       toast.success("Task deleted successfully!", {
         style: { background: '#0F172A', color: '#F8FAFC', border: '1px solid #EF4444' },
         iconTheme: { primary: '#EF4444', secondary: '#F8FAFC' }
@@ -36,7 +47,6 @@ const TaskList = () => {
     try {
       await axios.put(`http://localhost:10000/api/tasks/update/${id}`, { status: newStatus });
       fetchTasks();
-      // StatusChange 
       toast.success(`Task marked as ${newStatus}`, {
         style: { background: '#0F172A', color: '#F8FAFC', border: '1px solid #10B981' }
       });
@@ -74,9 +84,19 @@ const TaskList = () => {
     fetchTasks();
   }, []);
 
+  // Pagination Logic
+  const indexOfLastTask = currentPage * tasksPerPage;
+  const indexOfFirstTask = indexOfLastTask - tasksPerPage;
+  const currentTasks = tasks.slice(indexOfFirstTask, indexOfLastTask);
+  const totalPages = Math.ceil(tasks.length / tasksPerPage);
+
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="p-4 md:p-8 bg-[#020617] min-h-screen text-[#F8FAFC]">
-      {/* ToastContainer */}
       <Toaster position="top-center" reverseOrder={false} />
 
       {/* Header */}
@@ -95,47 +115,106 @@ const TaskList = () => {
       </div>
 
       {/* TasksGrid */}
-      <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-        {tasks.map((task) => (
-          <div key={task._id} className="group bg-[#0F172A] border border-[#94A3B8]/20 rounded-2xl p-6 transition-all hover:border-[#F59E0B]/50 hover:shadow-2xl">
-            <div className="flex justify-between items-start mb-5">
-              <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
-                task.priority === 'High' ? 'bg-[#EF4444]/20 text-[#EF4444]' : 
-                task.priority === 'Medium' ? 'bg-[#F59E0B]/20 text-[#F59E0B]' : 'bg-[#10B981]/20 text-[#10B981]'
-              }`}>
-                {task.priority}
-              </div>
-              <div className="flex gap-2">
-                <button onClick={() => openEditModal(task)} className="text-[#94A3B8] hover:text-[#10B981] p-1 transition-colors">
-                  <Edit3 size={18} />
-                </button>
-                <button onClick={() => handleDelete(task._id)} className="text-[#94A3B8] hover:text-[#EF4444] p-1 transition-colors">
-                  <Trash2 size={18} />
-                </button>
-              </div>
-            </div>
+      <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[400px]">
+        {currentTasks.map((task) => {
+          const isExpanded = expandedTasks[task._id];
+          const isLongDescription = task.description?.length > 70;
 
-            <h3 className="text-xl font-bold mb-2 group-hover:text-[#F59E0B] transition-colors">{task.title}</h3>
-            <p className="text-[#94A3B8] text-sm mb-6 line-clamp-2">{task.description}</p>
+          return (
+            <div key={task._id} className="group bg-[#0F172A] border border-[#94A3B8]/20 rounded-2xl p-6 transition-all hover:border-[#F59E0B]/50 hover:shadow-2xl flex flex-col h-full">
+              <div className="flex justify-between items-start mb-5">
+                <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
+                  task.priority === 'High' ? 'bg-[#EF4444]/20 text-[#EF4444]' : 
+                  task.priority === 'Medium' ? 'bg-[#F59E0B]/20 text-[#F59E0B]' : 'bg-[#10B981]/20 text-[#10B981]'
+                }`}>
+                  {task.priority}
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => openEditModal(task)} className="text-[#94A3B8] hover:text-[#10B981] p-1 transition-colors">
+                    <Edit3 size={18} />
+                  </button>
+                  <button onClick={() => handleDelete(task._id)} className="text-[#94A3B8] hover:text-[#EF4444] p-1 transition-colors">
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
 
-            <div className="flex items-center justify-between pt-5 border-t border-[#94A3B8]/10">
-              <button onClick={() => handleToggleStatus(task._id, task.status)} className="flex items-center gap-2 hover:opacity-80 transition-all">
-                {task.status === 'Completed' ? (
-                  <CheckCircle2 size={18} className="text-[#10B981]" />
-                ) : (
-                  <Clock size={18} className="text-[#F59E0B]" />
+              <h3 className="text-xl font-bold mb-2 group-hover:text-[#F59E0B] transition-colors">{task.title}</h3>
+              
+              <div className="flex-grow">
+                <p className={`text-[#94A3B8] text-sm mb-2 leading-relaxed transition-all duration-300 whitespace-pre-wrap ${!isExpanded ? 'line-clamp-2' : ''}`}>
+                  {task.description}
+                </p>
+                {isLongDescription && (
+                  <button 
+                    onClick={() => toggleDescription(task._id)}
+                    className="text-[#F59E0B] text-xs font-bold flex items-center gap-1 hover:underline mb-4"
+                  >
+                    {isExpanded ? (
+                      <><ChevronUp size={14} /> Show Less</>
+                    ) : (
+                      <><ChevronDown size={14} /> Read More</>
+                    )}
+                  </button>
                 )}
-                <span className={`text-sm font-bold ${task.status === 'Completed' ? 'text-[#10B981]' : 'text-[#F59E0B]'}`}>
-                  {task.status}
-                </span>
-              </button>
-              <div className="text-[#94A3B8] text-[10px] font-mono bg-[#020617] px-2 py-1 rounded">
-                #{task._id.slice(-4)}
+              </div>
+
+              <div className="flex items-center justify-between pt-5 border-t border-[#94A3B8]/10 mt-auto">
+                <button onClick={() => handleToggleStatus(task._id, task.status)} className="flex items-center gap-2 hover:opacity-80 transition-all">
+                  {task.status === 'Completed' ? (
+                    <CheckCircle2 size={18} className="text-[#10B981]" />
+                  ) : (
+                    <Clock size={18} className="text-[#F59E0B]" />
+                  )}
+                  <span className={`text-sm font-bold ${task.status === 'Completed' ? 'text-[#10B981]' : 'text-[#F59E0B]'}`}>
+                    {task.status}
+                  </span>
+                </button>
+                <div className="text-[#94A3B8] text-[10px] font-mono bg-[#020617] px-2 py-1 rounded">
+                  #{task._id.slice(-4)}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
+
+      {/* PAGINATION CONTROLS */}
+      {totalPages > 1 && (
+        <div className="max-w-4xl mx-auto mt-12 flex justify-center items-center gap-4">
+          <button 
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="p-2 rounded-lg bg-[#0F172A] border border-[#94A3B8]/20 disabled:opacity-30 disabled:cursor-not-allowed hover:border-[#F59E0B]/50 transition-all"
+          >
+            <ChevronLeft size={20} className="text-[#F59E0B]" />
+          </button>
+          
+          <div className="flex gap-2">
+            {[...Array(totalPages)].map((_, index) => (
+              <button
+                key={index + 1}
+                onClick={() => paginate(index + 1)}
+                className={`w-10 h-10 rounded-lg font-bold transition-all border ${
+                  currentPage === index + 1 
+                  ? 'bg-[#F59E0B] text-[#020617] border-[#F59E0B]' 
+                  : 'bg-[#0F172A] text-[#94A3B8] border-[#94A3B8]/20 hover:border-[#F59E0B]/50'
+                }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+
+          <button 
+            onClick={() => paginate(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="p-2 rounded-lg bg-[#0F172A] border border-[#94A3B8]/20 disabled:opacity-30 disabled:cursor-not-allowed hover:border-[#F59E0B]/50 transition-all"
+          >
+            <ChevronRight size={20} className="text-[#F59E0B]" />
+          </button>
+        </div>
+      )}
 
       {/* EDIT MODAL */}
       {isEditModalOpen && (

@@ -11,7 +11,7 @@ const Navbar = ({ onSearch }) => {
     const value = e.target.value;
     setSearchQuery(value);
     if (onSearch) {
-      onSearch(value); // Ye function TaskList ko query bhejay ga
+      onSearch(value); 
     }
   };
 
@@ -44,7 +44,7 @@ const Navbar = ({ onSearch }) => {
             {isSearchOpen ? <SearchX size={19} /> : <Search size={19} />}
           </button>
 
-          {/* My Tasks Link */}
+          {/* MyTasksLink */}
           <Link 
             to="/" 
             className="whitespace-nowrap px-1.5 md:px-3 py-2 text-[#0F172A] font-bold text-[12px] md:text-sm hover:text-[#F59E0B] transition-colors"
@@ -52,7 +52,7 @@ const Navbar = ({ onSearch }) => {
             My Tasks
           </Link>
           
-          {/* Add Task Button */}
+          {/* AddTaskButton */}
           <Link 
             to="/add" 
             className="flex items-center gap-1 whitespace-nowrap px-3 md:px-4 py-2 bg-[#F59E0B] text-[#020617] font-extrabold text-[12px] md:text-sm rounded-xl hover:shadow-lg transition-all shrink-0"
@@ -61,7 +61,7 @@ const Navbar = ({ onSearch }) => {
             <span>Add Task</span>
           </Link>
 
-          {/* Desktop Only */}
+          {/* DesktopOnly */}
           <div className="hidden lg:flex items-center gap-3 border-l border-[#94A3B8]/30 ml-2 pl-4">
             <Link to="/login" className="text-[#0F172A] font-bold text-sm flex items-center gap-1">
               <LogIn size={16} /> Login
@@ -71,7 +71,7 @@ const Navbar = ({ onSearch }) => {
             </Link>
           </div>
 
-          {/* Toggle Icon */}
+          {/* ToggleIcon */}
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="lg:hidden p-1.5 text-[#0F172A] hover:bg-[#0F172A]/5 rounded-lg border border-[#94A3B8]/20"
@@ -81,7 +81,7 @@ const Navbar = ({ onSearch }) => {
         </div>
       </div>
 
-      {/* --- SEARCH SLIDE-DOWN BOX --- */}
+      {/* --- SEARCH-SLIDE-DOWN--- */}
       {isSearchOpen && (
         <div className="bg-[#FEFFF2] border-t border-[#94A3B8]/10 p-3 shadow-inner animate-in slide-in-from-top duration-200">
           <div className="max-w-4xl mx-auto relative">

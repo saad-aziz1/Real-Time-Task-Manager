@@ -1,8 +1,10 @@
 import expres from 'express'
-import { createTask, getTasks, updateTask, deleteTask } from '../controllers/taskController.js'
+import { createTask, getTasks, updateTask, deleteTask, searchTasks } from '../controllers/taskController.js'
 
 
 const router = expres.Router()
+
+router.get('/search', searchTasks)
 
 router.post('/add', createTask)
 router.get('/all', getTasks)

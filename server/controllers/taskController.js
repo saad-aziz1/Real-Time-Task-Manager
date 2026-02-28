@@ -25,6 +25,34 @@ export const getTasks = async (req, res) => {
   }
 };
 
+export const searchTasks = async (req, res) => {
+  try {
+    const { query } = req.query; 
+    
+    if (!query) {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
+    
+    const searchRegex = new RegExp(query, 'i');
+
+    const tasks = await Task.find({
+      $or: [
+        { title: { $regex: searchRegex } },
+        { description: { $regex: searchRegex } }
+      ]
+    }).sort({ createdAt: -1 })
+
+    res.status(200).json(tasks)
+
+  } catch (error) {
+    res.status(500).json({ 
+      message: "Error searching tasks", 
+      error: error.message 
+    })
+  }
+}
+
 
 export const updateTask = async (req, res) => {
   try {

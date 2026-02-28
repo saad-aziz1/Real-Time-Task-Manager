@@ -1,9 +1,25 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LayoutGrid, PlusCircle, Search, Menu, X, LogIn, UserPlus } from 'lucide-react';
+import { LayoutGrid, PlusCircle, Search, Menu, X, LogIn, UserPlus, SearchX } from 'lucide-react';
 
-const Navbar = () => {
+const Navbar = ({ onSearch }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    if (onSearch) {
+      onSearch(value); // Ye function TaskList ko query bhejay ga
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    if (onSearch) onSearch("");
+    setIsSearchOpen(false);
+  };
 
   return (
     <nav className="bg-[#FEFFF2] border-b border-[#94A3B8]/20 sticky top-0 z-50">
@@ -20,9 +36,12 @@ const Navbar = () => {
         {/* 2: Navigation & Action */}
         <div className="flex items-center gap-1 sm:gap-4 ml-auto">
           
-          {/* Search Icon */}
-          <button className="p-2 text-[#0F172A] hover:bg-[#0F172A]/5 rounded-full transition-all shrink-0">
-            <Search size={19} md:size={20} />
+          {/* Search Icon Toggle */}
+          <button 
+            onClick={() => setIsSearchOpen(!isSearchOpen)}
+            className={`p-2 rounded-full transition-all shrink-0 ${isSearchOpen ? 'bg-[#F59E0B] text-[#020617]' : 'text-[#0F172A] hover:bg-[#0F172A]/5'}`}
+          >
+            {isSearchOpen ? <SearchX size={19} /> : <Search size={19} />}
           </button>
 
           {/* My Tasks Link */}
@@ -62,7 +81,32 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile&Tablet */}
+      {/* --- SEARCH SLIDE-DOWN BOX --- */}
+      {isSearchOpen && (
+        <div className="bg-[#FEFFF2] border-t border-[#94A3B8]/10 p-3 shadow-inner animate-in slide-in-from-top duration-200">
+          <div className="max-w-4xl mx-auto relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={18} />
+            <input 
+              type="text"
+              autoFocus
+              placeholder="Search by title or description..."
+              className="w-full bg-[#0F172A]/5 border border-[#94A3B8]/20 rounded-xl py-3 pl-10 pr-4 text-[#0F172A] focus:outline-none focus:border-[#F59E0B] font-medium transition-all"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+            {searchQuery && (
+              <button 
+                onClick={clearSearch}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#EF4444]"
+              >
+                <X size={18} />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Mobile&Tablet Menu */}
       {isMenuOpen && (
         <div className="lg:hidden bg-[#FEFFF2] border-t border-[#94A3B8]/10 absolute w-full left-0 shadow-2xl p-5 animate-in slide-in-from-top duration-300 z-40">
           <div className="flex flex-col gap-4">

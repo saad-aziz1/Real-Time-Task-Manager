@@ -4,24 +4,28 @@ import axios from 'axios';
 import { LogIn, Mail, Lock, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import Loader from './Loader';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const { data } = await axios.post('http://localhost:10000/api/auth/login', formData);
       
-      // Modern state update through context
       login(data.data.user, data.token);
       
       toast.success(`Welcome back!`);
       navigate('/');
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,9 +46,10 @@ const Login = () => {
             <input 
               type="email" 
               placeholder="Email Address"
-              className="w-full bg-[#020617] border border-[#94A3B8]/20 rounded-xl py-3 pl-10 pr-4 text-[#F8FAFC] focus:outline-none focus:border-[#F59E0B] transition-all"
+              className="w-full bg-[#020617] border border-[#94A3B8]/20 rounded-xl py-3 pl-10 pr-4 text-[#F8FAFC] focus:outline-none focus:border-[#F59E0B] transition-all disabled:opacity-50"
               onChange={(e) => setFormData({...formData, email: e.target.value})}
               required 
+              disabled={loading}
             />
           </div>
 
@@ -53,14 +58,23 @@ const Login = () => {
             <input 
               type="password" 
               placeholder="Password"
-              className="w-full bg-[#020617] border border-[#94A3B8]/20 rounded-xl py-3 pl-10 pr-4 text-[#F8FAFC] focus:outline-none focus:border-[#F59E0B] transition-all"
+              className="w-full bg-[#020617] border border-[#94A3B8]/20 rounded-xl py-3 pl-10 pr-4 text-[#F8FAFC] focus:outline-none focus:border-[#F59E0B] transition-all disabled:opacity-50"
               onChange={(e) => setFormData({...formData, password: e.target.value})}
               required 
+              disabled={loading}
             />
           </div>
 
-          <button type="submit" className="w-full bg-[#F59E0B] text-[#020617] font-extrabold py-3 rounded-xl flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#F59E0B]/10 active:scale-[0.98] transition-all">
-            Sign In <ArrowRight size={18} />
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="w-full bg-[#F59E0B] text-[#020617] font-extrabold py-3 rounded-xl flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#F59E0B]/10 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {loading ? <Loader size="sm" /> : (
+              <>
+                Sign In <ArrowRight size={18} />
+              </>
+            )}
           </button>
         </form>
 

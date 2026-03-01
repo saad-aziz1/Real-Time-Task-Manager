@@ -4,11 +4,13 @@ import { PlusCircle, Send, Lock, LogIn, UserPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useOutletContext, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import Loader from './Loader';
 
 const TaskForm = () => {
 
   const { onTaskAdded } = useOutletContext();
   const { user, token } = useAuth();
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -23,6 +25,8 @@ const TaskForm = () => {
       toast.error("Please login to add tasks");
       return;
     }
+
+    setLoading(true);
 
     try {
       const config = {
@@ -50,6 +54,8 @@ const TaskForm = () => {
     } catch (error) {
       console.error("Axios Error:", error);
       toast.error(error.response?.data?.message || "Error adding task");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,6 +111,7 @@ const TaskForm = () => {
                 setFormData({ ...formData, title: e.target.value })
               }
               required
+              disabled={loading}
             />
 
             <select
@@ -113,6 +120,7 @@ const TaskForm = () => {
               onChange={(e) =>
                 setFormData({ ...formData, priority: e.target.value })
               }
+              disabled={loading}
             >
               <option value="High">High Priority</option>
               <option value="Medium">Medium Priority</option>
@@ -129,14 +137,22 @@ const TaskForm = () => {
             onChange={(e) =>
               setFormData({ ...formData, description: e.target.value })
             }
+            disabled={loading}
           ></textarea>
 
           <button
             type="submit"
-            className="w-full md:w-auto px-8 py-3 bg-[#F59E0B] hover:bg-[#F59E0B]/90 text-[#020617] font-bold rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02]"
+            disabled={loading}
+            className="w-full md:w-auto px-8 py-3 bg-[#F59E0B] hover:bg-[#F59E0B]/90 text-[#020617] font-bold rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02] disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            <Send size={18} />
-            Create Task
+            {loading ? (
+              <Loader size="sm" />
+            ) : (
+              <>
+                <Send size={18} />
+                Create Task
+              </>
+            )}
           </button>
 
         </form>

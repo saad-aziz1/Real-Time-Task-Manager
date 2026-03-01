@@ -1,12 +1,14 @@
-import  { useEffect, useState } from 'react'; 
+import { useEffect, useState } from 'react'; 
 import axios from 'axios';
 import { CheckCircle2, Clock, Trash2, Edit3, X, AlertCircle, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Lock, UserPlus, LogIn } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import { useOutletContext, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Loader from './Loader';
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
   const [expandedTasks, setExpandedTasks] = useState({});
@@ -25,6 +27,7 @@ const TaskList = () => {
 
   const fetchTasks = async () => {
     if (!token) return;
+    setLoading(true);
     try {
       const url = searchQuery 
         ? `http://localhost:10000/api/tasks/search?query=${searchQuery}`
@@ -44,6 +47,8 @@ const TaskList = () => {
       if (error.response?.status !== 401) {
         toast.error("Failed to load tasks");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -153,68 +158,74 @@ const TaskList = () => {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[400px]">
-        {tasks.length > 0 ? (
-          currentTasks.map(task => {
-            const isExpanded = expandedTasks[task._id];
-            const isLongDescription = task.description?.length > 100;
+      <div className="max-w-4xl mx-auto min-h-[400px]">
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <Loader size="lg" />
+          </div>
+        ) : tasks.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {currentTasks.map(task => {
+              const isExpanded = expandedTasks[task._id];
+              const isLongDescription = task.description?.length > 100;
 
-            return (
-              <div key={task._id} className="group bg-[#0F172A] p-6 rounded-2xl border border-[#94A3B8]/10 hover:border-[#F59E0B]/40 transition-all duration-300 shadow-xl flex flex-col h-full">
-                <div className="flex justify-between items-start mb-4">
-                  <span className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider ${
-                    task.priority === 'High' ? 'bg-[#EF4444]/20 text-[#EF4444]' : 
-                    task.priority === 'Medium' ? 'bg-[#F59E0B]/20 text-[#F59E0B]' : 'bg-[#10B981]/20 text-[#10B981]'
-                  }`}>
-                    {task.priority}
-                  </span>
-                  <div className="flex gap-3 opacity-40 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => openEditModal(task)} className="hover:text-[#10B981] transition-colors text-[#94A3B8]">
-                      <Edit3 size={18} />
-                    </button>
-                    <button onClick={() => handleDelete(task._id)} className="hover:text-[#EF4444] transition-colors text-[#94A3B8]">
-                      <Trash2 size={18} />
+              return (
+                <div key={task._id} className="group bg-[#0F172A] p-6 rounded-2xl border border-[#94A3B8]/10 hover:border-[#F59E0B]/40 transition-all duration-300 shadow-xl flex flex-col h-full">
+                  <div className="flex justify-between items-start mb-4">
+                    <span className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider ${
+                      task.priority === 'High' ? 'bg-[#EF4444]/20 text-[#EF4444]' : 
+                      task.priority === 'Medium' ? 'bg-[#F59E0B]/20 text-[#F59E0B]' : 'bg-[#10B981]/20 text-[#10B981]'
+                    }`}>
+                      {task.priority}
+                    </span>
+                    <div className="flex gap-3 opacity-40 group-hover:opacity-100 transition-opacity">
+                      <button onClick={() => openEditModal(task)} className="hover:text-[#10B981] transition-colors text-[#94A3B8]">
+                        <Edit3 size={18} />
+                      </button>
+                      <button onClick={() => handleDelete(task._id)} className="hover:text-[#EF4444] transition-colors text-[#94A3B8]">
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <h3 className="text-lg font-bold mb-2 group-hover:text-[#F59E0B] transition-colors">{task.title}</h3>
+                  
+                  <div className="flex-grow">
+                    <p className={`text-sm text-[#94A3B8] mb-2 leading-relaxed transition-all ${!isExpanded && isLongDescription ? 'line-clamp-2' : ''}`}>
+                      {task.description}
+                    </p>
+                    
+                    {isLongDescription && (
+                      <button onClick={() => toggleReadMore(task._id)} className="text-xs font-bold text-[#F59E0B] flex items-center gap-1 mb-4 uppercase tracking-tighter">
+                        {isExpanded ? <>Show Less <ChevronUp size={14}/></> : <>Read More <ChevronDown size={14}/></>}
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-[#94A3B8]/5 mt-auto">
+                    <button
+                      onClick={() => handleToggleStatus(task._id, task.status)}
+                      className={`flex items-center gap-2 text-xs font-black uppercase tracking-widest transition-all ${
+                        task.status === 'Completed' ? 'text-[#10B981]' : 'text-[#F59E0B]'
+                      }`}
+                    >
+                      {task.status === 'Completed' ? <CheckCircle2 size={16} /> : <Clock size={16} />}
+                      {task.status || "Pending"}
                     </button>
                   </div>
                 </div>
-
-                <h3 className="text-lg font-bold mb-2 group-hover:text-[#F59E0B] transition-colors">{task.title}</h3>
-                
-                <div className="flex-grow">
-                  <p className={`text-sm text-[#94A3B8] mb-2 leading-relaxed transition-all ${!isExpanded && isLongDescription ? 'line-clamp-2' : ''}`}>
-                    {task.description}
-                  </p>
-                  
-                  {isLongDescription && (
-                    <button onClick={() => toggleReadMore(task._id)} className="text-xs font-bold text-[#F59E0B] flex items-center gap-1 mb-4 uppercase tracking-tighter">
-                      {isExpanded ? <>Show Less <ChevronUp size={14}/></> : <>Read More <ChevronDown size={14}/></>}
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-[#94A3B8]/5 mt-auto">
-                  <button
-                    onClick={() => handleToggleStatus(task._id, task.status)}
-                    className={`flex items-center gap-2 text-xs font-black uppercase tracking-widest transition-all ${
-                      task.status === 'Completed' ? 'text-[#10B981]' : 'text-[#F59E0B]'
-                    }`}
-                  >
-                    {task.status === 'Completed' ? <CheckCircle2 size={16} /> : <Clock size={16} />}
-                    {task.status || "Pending"}
-                  </button>
-                </div>
-              </div>
-            );
-          })
+              );
+            })}
+          </div>
         ) : (
-          <div className="col-span-full flex flex-col items-center py-20 bg-[#0F172A] rounded-3xl border border-dashed border-[#94A3B8]/20">
+          <div className="flex flex-col items-center py-20 bg-[#0F172A] rounded-3xl border border-dashed border-[#94A3B8]/20 w-full">
             <AlertCircle size={48} className="text-[#94A3B8] mb-4 opacity-20" />
             <p className="text-[#94A3B8] font-medium text-lg">No tasks found.</p>
           </div>
         )}
       </div>
 
-      {totalPages > 1 && (
+      {!loading && totalPages > 1 && (
         <div className="max-w-4xl mx-auto mt-12 flex justify-center items-center gap-2">
           <button 
             disabled={currentPage === 1}

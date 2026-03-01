@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react'; 
 import axios from 'axios';
-import { CheckCircle2, Clock, Trash2, Edit3, X, AlertCircle, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CheckCircle2, Clock, Trash2, Edit3, X, AlertCircle, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Lock, UserPlus, LogIn } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import { useOutletContext, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -10,7 +10,6 @@ const TaskList = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
   const [expandedTasks, setExpandedTasks] = useState({});
-  
   
   const [currentPage, setCurrentPage] = useState(1);
   const tasksPerPage = 6;
@@ -38,7 +37,6 @@ const TaskList = () => {
         setTasks(response.data.tasks);
       }
       
-     
       if (searchQuery) setCurrentPage(1);
       
     } catch (error) {
@@ -53,12 +51,10 @@ const TaskList = () => {
     fetchTasks();
   }, [user, token, searchQuery, refresh]);
 
-  // ReadMoreToggle
   const toggleReadMore = (taskId) => {
     setExpandedTasks(prev => ({ ...prev, [taskId]: !prev[taskId] }));
   };
 
-  // DeleteLogic
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:10000/api/tasks/delete/${id}`, config);
@@ -69,7 +65,6 @@ const TaskList = () => {
     }
   };
 
-  // StatusUpdateLogic
   const handleToggleStatus = async (id, currentStatus) => {
     const newStatus = currentStatus === 'Pending' ? 'Completed' : 'Pending';
     try {
@@ -81,7 +76,6 @@ const TaskList = () => {
     }
   };
 
-  // EditModalLogic
   const openEditModal = (task) => {
     setCurrentTask({ ...task });
     setIsEditModalOpen(true);
@@ -103,7 +97,6 @@ const TaskList = () => {
     }
   };
 
-  // PaginationCalculationLogic
   const indexOfLastTask = currentPage * tasksPerPage;
   const indexOfFirstTask = indexOfLastTask - tasksPerPage;
   const currentTasks = tasks.slice(indexOfFirstTask, indexOfLastTask);
@@ -114,7 +107,36 @@ const TaskList = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  if (!user) return <div className="text-center p-20 text-[#94A3B8] font-bold">Please login.</div>;
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[70vh] px-6 text-center">
+        <div className="bg-[#0F172A] p-8 rounded-[2.5rem] border border-[#94A3B8]/10 shadow-2xl max-w-md w-full animate-in fade-in zoom-in duration-500">
+          <div className="w-20 h-20 bg-[#F59E0B]/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-[#F59E0B]/20">
+            <Lock size={40} className="text-[#F59E0B]" />
+          </div>
+          <h2 className="text-2xl font-black text-[#F8FAFC] mb-3 tracking-tight">Access Restricted</h2>
+          <p className="text-[#94A3B8] text-sm leading-relaxed mb-8">
+            Please log in or create an account to view and manage your workspace. 
+            Your tasks are waiting for you!
+          </p>
+          <div className="flex flex-col gap-3">
+            <Link 
+              to="/login" 
+              className="flex items-center justify-center gap-2 py-4 bg-[#F59E0B] text-[#020617] font-black rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-[#F59E0B]/20"
+            >
+              <LogIn size={20} /> LOGIN TO PROCEED
+            </Link>
+            <Link 
+              to="/signup" 
+              className="flex items-center justify-center gap-2 py-4 bg-[#1E293B] text-[#F8FAFC] font-black rounded-2xl border border-[#94A3B8]/10 transition-all hover:bg-[#0F172A]"
+            >
+              <UserPlus size={20} /> CREATE ACCOUNT
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 md:p-8 bg-[#020617] min-h-screen text-[#F8FAFC]">
@@ -192,7 +214,6 @@ const TaskList = () => {
         )}
       </div>
 
-      {/* Pagination  */}
       {totalPages > 1 && (
         <div className="max-w-4xl mx-auto mt-12 flex justify-center items-center gap-2">
           <button 
@@ -227,7 +248,6 @@ const TaskList = () => {
         </div>
       )}
 
-      {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-[#020617]/95 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-[#0F172A] border border-[#94A3B8]/20 w-full max-w-lg rounded-3xl p-8 shadow-2xl">

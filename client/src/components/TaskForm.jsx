@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { PlusCircle, Send } from 'lucide-react';
+import { PlusCircle, Send, Lock, LogIn, UserPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 const TaskForm = () => {
@@ -38,11 +38,8 @@ const TaskForm = () => {
       );
 
       if (response.status === 201) {
-
-        
         setFormData({ title: '', description: '', priority: 'Medium' });
 
-        
         if (onTaskAdded) {
           onTaskAdded();
         }
@@ -56,7 +53,35 @@ const TaskForm = () => {
     }
   };
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
+        <div className="bg-[#0F172A] p-8 rounded-[2.5rem] border border-[#94A3B8]/10 shadow-2xl max-w-md w-full animate-in fade-in zoom-in duration-500">
+          <div className="w-20 h-20 bg-[#F59E0B]/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-[#F59E0B]/20">
+            <Lock size={40} className="text-[#F59E0B]" />
+          </div>
+          <h2 className="text-2xl font-black text-[#F8FAFC] mb-3 tracking-tight">Login Required</h2>
+          <p className="text-[#94A3B8] text-sm leading-relaxed mb-8">
+            You need to be authenticated to create new tasks. Join TaskFlow to start organizing your day.
+          </p>
+          <div className="flex flex-col gap-3">
+            <Link 
+              to="/login" 
+              className="flex items-center justify-center gap-2 py-4 bg-[#F59E0B] text-[#020617] font-black rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-[#F59E0B]/20"
+            >
+              <LogIn size={20} /> LOGIN TO PROCEED
+            </Link>
+            <Link 
+              to="/signup" 
+              className="flex items-center justify-center gap-2 py-4 bg-[#1E293B] text-[#F8FAFC] font-black rounded-2xl border border-[#94A3B8]/10 transition-all hover:bg-[#0F172A]"
+            >
+              <UserPlus size={20} /> CREATE ACCOUNT
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full bg-[#020617] pt-8 px-4 md:px-8">

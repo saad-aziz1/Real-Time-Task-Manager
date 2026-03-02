@@ -8,7 +8,7 @@ const Loader = ({ size = "md" }) => {
   };
 
   return (
-    <div className="flex justify-center items-center py-10">
+    <div className="flex justify-center items-center">
       <div 
         className={`${sizeClasses[size]} border-[#94A3B8]/20 border-t-[#F59E0B] rounded-full animate-spin`}
       ></div>

@@ -143,7 +143,7 @@ const TaskForm = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full md:w-auto px-8 py-3 bg-[#F59E0B] hover:bg-[#F59E0B]/90 text-[#020617] font-bold rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02] disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full md:w-[180px] h-[48px] bg-[#F59E0B] hover:bg-[#F59E0B]/90 text-[#020617] font-bold rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02] disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {loading ? (
               <Loader size="sm" />

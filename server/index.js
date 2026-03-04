@@ -8,17 +8,21 @@ import authRouter from './routes/authRoutes.js'
 
 
 const app = express()
-const PORT= process.env.PORT || 5000
+const PORT= process.env.PORT || 10000
 
 app.use(cors({
-  origin: "http://localhost:5173", 
+  origin: "*", 
   credentials: true
 }));
 app.use(express.json())
 app.use('/api/tasks', taskRoutes)
 app.use('/api/auth', authRouter)
 
-app.listen(PORT, () => {
-    connectDB()
-    console.log(`server running at local ${PORT}`);
+app.listen(PORT, async () => {
+    try {
+        await connectDB();
+        console.log(`Server running on port ${PORT}`);
+    } catch (error) {
+        console.log("Database connection failed", error);
+    }
 })

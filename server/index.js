@@ -11,7 +11,7 @@ const app = express()
 const PORT= process.env.PORT || 10000
 
 app.use(cors({
-  origin: "*", 
+  origin: "https://real-time-task-manager-blond.vercel.app/", 
   credentials: true
 }));
 app.use(express.json())

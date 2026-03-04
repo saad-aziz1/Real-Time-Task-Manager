@@ -191,7 +191,7 @@ const TaskList = () => {
                   <h3 className="text-lg font-bold mb-2 group-hover:text-[#F59E0B] transition-colors">{task.title}</h3>
                   
                   <div className="flex-grow">
-                    <p className={`text-sm text-[#94A3B8] mb-2 leading-relaxed transition-all ${!isExpanded && isLongDescription ? 'line-clamp-2' : ''}`}>
+                    <p className={`text-sm text-[#94A3B8] mb-2 leading-relaxed transition-all whitespace-pre-wrap ${!isExpanded && isLongDescription ? 'line-clamp-2' : ''}`}>
                       {task.description}
                     </p>
                     

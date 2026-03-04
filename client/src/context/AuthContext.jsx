@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect, useContext } from 'react';
+import API from '../api/axios.js';
 
 const AuthContext = createContext();
 
@@ -16,19 +17,14 @@ export const AuthProvider = ({ children }) => {
       if (storedUser && storedToken) {
         try {
           
-          const response = await fetch(
-            "http://localhost:10000/api/tasks/all",
-            {
-              headers: {
-                Authorization: `Bearer ${storedToken}`
-              }
+          // Localhost URL ko API instance se replace kar diya
+          const response = await API.get("/api/tasks/all", {
+            headers: {
+              Authorization: `Bearer ${storedToken}`
             }
-          );
+          });
 
-          if (!response.ok) {
-            throw new Error("Token invalid");
-          }
-
+          // Axios mein agar status 200 na ho to wo khud error throw karta hai
           setUser(JSON.parse(storedUser));
           setToken(storedToken);
 

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'; 
-import axios from 'axios';
 import { CheckCircle2, Clock, Trash2, Edit3, X, AlertCircle, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Lock, UserPlus, LogIn } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import { useOutletContext, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Loader from './Loader';
+import API from '../api/axios.js'
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
@@ -30,10 +30,10 @@ const TaskList = () => {
     setLoading(true);
     try {
       const url = searchQuery 
-        ? `http://localhost:10000/api/tasks/search?query=${searchQuery}`
-        : 'http://localhost:10000/api/tasks/all';
+        ? `/api/tasks/search?query=${searchQuery}`
+        : '/api/tasks/all';
 
-      const response = await axios.get(url, config);
+      const response = await API.get(url, config);
       if (Array.isArray(response.data)) {
         setTasks(response.data);
       } else if (Array.isArray(response.data.tasks)) {
@@ -62,7 +62,7 @@ const TaskList = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:10000/api/tasks/delete/${id}`, config);
+      await API.delete(`/api/tasks/delete/${id}`, config);
       fetchTasks();
       toast.success("Task deleted successfully!");
     } catch (error) {
@@ -73,7 +73,7 @@ const TaskList = () => {
   const handleToggleStatus = async (id, currentStatus) => {
     const newStatus = currentStatus === 'Pending' ? 'Completed' : 'Pending';
     try {
-      await axios.put(`http://localhost:10000/api/tasks/update/${id}`, { status: newStatus }, config);
+      await API.put(`/api/tasks/update/${id}`, { status: newStatus }, config);
       fetchTasks();
       toast.success(`Task marked as ${newStatus}`);
     } catch (error) {
@@ -89,7 +89,7 @@ const TaskList = () => {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:10000/api/tasks/update/${currentTask._id}`, {
+      await API.put(`/api/tasks/update/${currentTask._id}`, {
         title: currentTask.title,
         description: currentTask.description,
         priority: currentTask.priority

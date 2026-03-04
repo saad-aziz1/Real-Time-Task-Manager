@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
 import { UserPlus, Mail, Lock, User, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import Loader from './Loader';
+import API from '../api/axios.js'
 
 const SignUp = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
@@ -16,7 +16,7 @@ const SignUp = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data } = await axios.post('http://localhost:10000/api/auth/signup', formData);
+      const { data } = await API.post('/api/auth/signup', formData);
       
       login(data.data.user, data.token);
       

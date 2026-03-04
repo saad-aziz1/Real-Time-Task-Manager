@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { PlusCircle, Send, Lock, LogIn, UserPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useOutletContext, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Loader from './Loader';
+import API from '../api/axios.js'
 
 const TaskForm = () => {
 
@@ -35,8 +35,8 @@ const TaskForm = () => {
         }
       };
 
-      const response = await axios.post(
-        'http://localhost:10000/api/tasks/add',
+      const response = await API.post(
+        '/api/tasks/add',
         formData,
         config
       );

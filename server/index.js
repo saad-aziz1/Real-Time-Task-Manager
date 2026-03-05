@@ -15,7 +15,7 @@ app.use(cors({
 }));
 
 app.use(express.json())
-
+// add new router
 app.get("/", (req, res) => {
   res.send("Server is running");
 });

@@ -6,8 +6,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TaskFlow</title>
   </head>
-  <body>
-    <div id="root"></div>
+  <body style="margin: 0; background-color: #0F172A;">
+    <div id="root">
+      <style>
+        .initial-loader-container {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          width: 100vw;
+          background-color: #0F172A;
+          color: white;
+          font-family: 'Inter', system-ui, -apple-system, sans-serif;
+          text-align: center;
+        }
+        .initial-loader-spinner {
+          width: 45px;
+          height: 45px;
+          border: 4px solid rgba(245, 158, 11, 0.1);
+          border-top: 4px solid #F59E0B;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+          margin-bottom: 20px;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        .initial-loader-text {
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: #F8FAFC;
+          letter-spacing: 0.5px;
+        }
+        .initial-loader-subtext {
+          font-size: 0.85rem;
+          color: #94A3B8;
+          margin-top: 10px;
+          max-width: 250px;
+          line-height: 1.4;
+        }
+      </style>
+      <div class="initial-loader-container">
+        <div class="initial-loader-spinner"></div>
+        <div class="initial-loader-text">Render server is waking up...</div>
+        <div class="initial-loader-subtext">It can take some time, please wait for a moment.</div>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

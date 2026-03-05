@@ -160,8 +160,10 @@ const TaskList = () => {
 
       <div className="max-w-4xl mx-auto min-h-[400px]">
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <Loader size="lg" />
+          <div className="flex flex-col justify-center items-center h-64 text-center">
+            <div className="w-12 h-12 border-4 border-[#F59E0B]/10 border-top-4 border-t-[#F59E0B] rounded-full animate-spin mb-4"></div>
+            <p className="text-[#F8FAFC] font-bold">Render server is waking up...</p>
+            <p className="text-[#94A3B8] text-xs mt-2">It can take some time, please wait for a moment.</p>
           </div>
         ) : tasks.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
